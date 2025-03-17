@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Adjust</title>
+    <style>
+        #image-container {
+            width: 500px;
+            height: 500px;
+            border: 2px dashed #ccc;
+            position: relative;
+            overflow: hidden;
+        }
+        #uploaded-image {
+            max-width: 100%;
+            max-height: 100%;
+            position: absolute;
+            cursor: grab;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+  <nav>
+    <a href="about.html">About</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="upload.html">Upload</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+    <input type="file" id="image-upload" accept="image/*">
+    <div id="image-container">
+        <img id="uploaded-image" style="display: none;">
+    </div>
+
+    <script>
+        let image = document.getElementById("uploaded-image");
+        let container = document.getElementById("image-container");
+        let input = document.getElementById("image-upload");
+
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        // Load the selected image
+        input.addEventListener("change", function(event) {
+            let file = event.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                    image.style.display = "block";
+                    image.style.left = "0px";
+                    image.style.top = "0px";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Start dragging
+        image.addEventListener("mousedown", function(event) {
+            isDragging = true;
+            offsetX = event.clientX - image.offsetLeft;
+            offsetY = event.clientY - image.offsetTop;
+            image.style.cursor = "grabbing";
+        });
+
+        // Move the image
+        document.addEventListener("mousemove", function(event) {
+            if (isDragging) {
+                let newX = event.clientX - offsetX;
+                let newY = event.clientY - offsetY;
+
+                // Keep the image within the container bounds
+                let maxX = container.clientWidth - image.clientWidth;
+                let maxY = container.clientHeight - image.clientHeight;
+
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
+
+                image.style.left = newX + "px";
+                image.style.top = newY + "px";
+            }
+        });
+
+        // Stop dragging
+        document.addEventListener("mouseup", function() {
+            isDragging = false;
+            image.style.cursor = "grab";
+        });
+
+    </script>
+
+</body>
+</html>
